@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emotion Prediction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fall {
+      0% {
+        transform: translateY(-100px);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+
+    .emoji {
+      position: fixed;
+      font-size: 2rem;
+      z-index: 9999;
+      animation: fall 3s linear forwards;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="transition-colors duration-500 bg-white text-black min-h-screen">
+
+  <div class="min-h-screen flex flex-col items-center justify-center px-4 relative">
+    <!-- Toggle Theme Button -->
+    <div class="flex justify-end w-full max-w-4xl p-4">
+      <button id="toggle-theme" class="bg-gray-200 text-black px-4 py-2 rounded dark:bg-gray-700 dark:text-white text-lg">
+        <span id="theme-icon">🌞</span>
+      </button>
+      
+    </div>
+
+    <h1 class="text-3xl font-bold mb-6 text-center">Text to Emotion Prediction 😄😭😡</h1>
+
+    <form method="POST" class="w-full max-w-lg space-y-4 text-center">
+      <textarea name="text" rows="4" class="w-full p-3 rounded-lg border dark:bg-gray-800 dark:border-gray-700 dark:text-white" placeholder="Type something here...">{{ text }}</textarea>
+      <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow">
+        Detect Emotion
+      </button>
+    </form>
+
+    {% if label %}
+      <div class="mt-6 text-xl font-semibold">
+        Emotion: <span class="text-blue-500">{{ label }}</span>
+        <span class="ml-2">{{ label_emoji }}</span>
+      </div>
+      <div class="mt-2 text-md">
+        Confidence: <span class="text-green-500">{{ confidence }}%</span>
+      </div>
+    {% endif %}
+
+    <!-- Emoji rain script -->
+    {% if label %}
+    <script>
+      window.onload = () => {
+        const emoji = "{{ label_emoji }}";
+        for (let i = 0; i < 30; i++) {
+          const el = document.createElement("div");
+          el.classList.add("emoji");
+          el.style.left = Math.random() * 100 + "vw";
+          el.style.top = "-50px";
+          el.textContent = emoji;
+          document.body.appendChild(el);
+          setTimeout(() => el.remove(), 3000);
+        }
+      };
+    </script>
+    {% endif %}
+
+  </div>
+
+  <script>
+    const toggleBtn = document.getElementById("toggle-theme");
+    const themeIcon = document.getElementById("theme-icon");
+    const html = document.documentElement;
+    const textarea = document.querySelector("textarea");
+  
+    function setTheme(isDark) {
+      if (isDark) {
+        html.classList.add("dark");
+        document.body.classList.replace("bg-white", "bg-gray-900");
+        document.body.classList.replace("text-black", "text-white");
+        themeIcon.textContent = "🌙";
+  
+        // Toggle button & textarea dark styles
+        toggleBtn.classList.remove("bg-white", "text-black");
+        toggleBtn.classList.add("bg-gray-700", "text-white");
+  
+        textarea.classList.remove("bg-white", "text-black");
+        textarea.classList.add("dark:bg-gray-800", "dark:text-white");
+      } else {
+        html.classList.remove("dark");
+        document.body.classList.replace("bg-gray-900", "bg-white");
+        document.body.classList.replace("text-white", "text-black");
+        themeIcon.textContent = "🌞";
+  
+        // Toggle button & textarea light styles
+        toggleBtn.classList.remove("bg-gray-700", "text-white");
+        toggleBtn.classList.add("bg-white", "text-black");
+  
+        textarea.classList.remove("dark:bg-gray-800", "dark:text-white");
+        textarea.classList.add("bg-white", "text-black");
+      }
+    }
+  
+    // Load theme on page load
+    const isDarkStored = localStorage.getItem("theme") === "dark";
+    setTheme(isDarkStored);
+  
+    toggleBtn.addEventListener("click", () => {
+      const isDark = !html.classList.contains("dark");
+      setTheme(isDark);
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+  </script>
+
+  
+    <!-- Footer -->
+    <footer class="w-full mt-12 bg-gray-100 dark:bg-gray-800 text-center py-4 text-sm text-gray-600 dark:text-gray-400 border-t dark:border-gray-700">
+      &copy; 2025 Emotion Prediction by Aavula Venkateshwar. All rights reserved.
+    </footer>
+  
+</body>
+</html>
